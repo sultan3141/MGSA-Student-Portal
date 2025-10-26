@@ -1,0 +1,478 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-6 px-3 sm:px-6 lg:px-8">
+    <div class="w-full max-w-2xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="text-center">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
+                Create your account
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Join MGSA Portal today
+            </p>
+        </div>
+
+        <!-- Display Messages -->
+        {% if messages %}
+        <div class="space-y-2">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} 
+                {% if message.tags == 'success' %}bg-green-500 text-white
+                {% elif message.tags == 'error' %}bg-red-500 text-white
+                {% elif message.tags == 'warning' %}bg-yellow-500 text-gray-800
+                {% else %}bg-blue-500 text-white{% endif %} 
+                p-3 sm:p-4 rounded-lg shadow-md text-sm sm:text-base">
+                <div class="flex items-center">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle mr-2"></i>
+                    {% elif message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle mr-2"></i>
+                    {% endif %}
+                    {{ message }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Registration Form -->
+        <form class="bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6" method="POST" action="{% url 'register-page' %}">
+            {% csrf_token %}
+            
+            <!-- Basic Information -->
+            <div class="grid grid-cols-1 gap-3 sm:gap-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address *</label>
+                    <input id="email" name="email" type="email" required 
+                           class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                           placeholder="Enter your email"
+                           value="{{ request.POST.email }}">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700">First Name *</label>
+                        <input id="first_name" name="first_name" type="text" required
+                               class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                               placeholder="First name"
+                               value="{{ request.POST.first_name }}">
+                    </div>
+
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name *</label>
+                        <input id="last_name" name="last_name" type="text" required
+                               class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                               placeholder="Last name"
+                               value="{{ request.POST.last_name }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Geographical Information -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                    <label for="zone" class="block text-sm font-medium text-gray-700">Zone *</label>
+                    <select id="zone" name="zone" required
+                            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+                        <option value="">Select Zone</option>
+                        <option value="West Hararghe" {% if request.POST.zone == 'West Hararghe' %}selected{% endif %}>West Hararghe</option>
+                        <option value="East Hararghe" {% if request.POST.zone == 'East Hararghe' %}selected{% endif %}>East Hararghe</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="woreda" class="block text-sm font-medium text-gray-700">Woreda *</label>
+                    <select id="woreda" name="woreda" required
+                            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+                        <option value="">Select Woreda</option>
+                        <!-- Woredas will be populated dynamically based on zone selection -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Academic Information -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                    <label for="college" class="block text-sm font-medium text-gray-700">College *</label>
+                    <select id="college" name="college" required
+                            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+                        <option value="">Select College</option>
+                        <option value="College of Business & Economics" {% if request.POST.college == 'College of Business & Economics' %}selected{% endif %}>College of Business & Economics</option>
+                        <option value="College of Computing & Informatics" {% if request.POST.college == 'College of Computing & Informatics' %}selected{% endif %}>College of Computing & Informatics</option>
+                        <option value="College of Agriculture & Environmental Sciences" {% if request.POST.college == 'College of Agriculture & Environmental Sciences' %}selected{% endif %}>College of Agriculture & Environmental Sciences</option>
+                        <option value="College of Health & Medical Sciences" {% if request.POST.college == 'College of Health & Medical Sciences' %}selected{% endif %}>College of Health & Medical Sciences</option>
+                        <option value="College of Social Sciences & Humanities" {% if request.POST.college == 'College of Social Sciences & Humanities' %}selected{% endif %}>College of Social Sciences & Humanities</option>
+                        <option value="College of Law" {% if request.POST.college == 'College of Law' %}selected{% endif %}>College of Law</option>
+                        <option value="College of Veterinary Medicine" {% if request.POST.college == 'College of Veterinary Medicine' %}selected{% endif %}>College of Veterinary Medicine</option>
+                        <option value="College of Natural & Computational Sciences" {% if request.POST.college == 'College of Natural & Computational Sciences' %}selected{% endif %}>College of Natural & Computational Sciences</option>
+                        <option value="Sport Science Academy" {% if request.POST.college == 'Sport Science Academy' %}selected{% endif %}>Sport Science Academy</option>
+                        <option value="Haramaya Institute of Technology" {% if request.POST.college == 'Haramaya Institute of Technology' %}selected{% endif %}>Haramaya Institute of Technology</option>
+                        <option value="College of Education & Behavioral Science" {% if request.POST.college == 'College of Education & Behavioral Science' %}selected{% endif %}>College of Education & Behavioral Science</option>
+                        <option value="College of Agro Industry & Land Resources" {% if request.POST.college == 'College of Agro Industry & Land Resources' %}selected{% endif %}>College of Agro Industry & Land Resources</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="department" class="block text-sm font-medium text-gray-700">Department *</label>
+                    <select id="department" name="department" required
+                            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+                        <option value="">Select Department</option>
+                        <!-- Departments will be populated dynamically based on college selection -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                    <label for="gender" class="block text-sm font-medium text-gray-700">Gender *</label>
+                    <select id="gender" name="gender" required
+                            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+                        <option value="">Select Gender</option>
+                        <option value="Male" {% if request.POST.gender == 'Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if request.POST.gender == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if request.POST.gender == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="year_of_study" class="block text-sm font-medium text-gray-700">Year of Study *</label>
+                    <select id="year_of_study" name="year_of_study" required
+                            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+                        <option value="">Select Year</option>
+                        <option value="Fresh" {% if request.POST.year_of_study == 'Fresh' %}selected{% endif %}>Fresh</option>
+                        <option value="2nd Year" {% if request.POST.year_of_study == '2nd Year' %}selected{% endif %}>2nd Year</option>
+                        <option value="3rd Year" {% if request.POST.year_of_study == '3rd Year' %}selected{% endif %}>3rd Year</option>
+                        <option value="4th Year" {% if request.POST.year_of_study == '4th Year' %}selected{% endif %}>4th Year</option>
+                        <option value="5th Year" {% if request.POST.year_of_study == '5th Year' %}selected{% endif %}>5th Year</option>
+                        <option value="Graduate" {% if request.POST.year_of_study == 'Graduate' %}selected{% endif %}>Graduate</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Password Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                    <label for="password1" class="block text-sm font-medium text-gray-700">Password *</label>
+                    <input id="password1" name="password1" type="password" required 
+                           class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                           placeholder="Min. 6 characters">
+                </div>
+
+                <div>
+                    <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password *</label>
+                    <input id="password2" name="password2" type="password" required 
+                           class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                           placeholder="Confirm password">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-2">
+                <button type="submit" 
+                        class="w-full py-3 px-4 border border-transparent text-sm sm:text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Create Account
+                </button>
+            </div>
+
+            <!-- Login Link -->
+            <div class="text-center pt-2">
+                <a href="{% url 'login-page' %}" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition duration-200">
+                    Already have an account? Sign in
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-hide messages after 5 seconds
+    const messages = document.querySelectorAll('.alert');
+    messages.forEach(function(message) {
+        setTimeout(function() {
+            message.style.transition = 'opacity 0.5s ease';
+            message.style.opacity = '0';
+            setTimeout(function() {
+                if (message.parentElement) {
+                    message.remove();
+                }
+            }, 500);
+        }, 5000);
+    });
+
+    // Woreda data
+    const woredaData = {
+        'West Hararghe': [
+            'Mieso', 'Doba', 'Tulo', 'Mesela', 'Chiro', 'Anchar', 'Guba Koricha', 
+            'Habro', 'Daro Lebu', 'Boke', 'Kuni', 'Gemches', 'Chiro Zuria', 'Bedesa'
+        ],
+        'East Hararghe': [
+            'Kombolcha', 'Jarso', 'Gursum', 'Babile', 'Fedis', 'Haro Maya', 
+            'Kurfa Chele', 'Kersa', 'Meta', 'Goro Gutu', 'Deder', 'Melka Belo', 
+            'Bedeno', 'Midga Tola', 'Chinaksan', 'Girawa', 'Gola Oda', 'Meyu'
+        ]
+    };
+
+    // College to Department mapping
+    const collegeDepartments = {
+        'College of Business & Economics': [
+            'Accounting and Finance',
+            'Cooperatives (Cooperative Business Management & Cooperative Accounting and Auditing)',
+            'Economics',
+            'Management',
+            'Public Administration and Development Management'
+        ],
+        'College of Computing & Informatics': [
+            'Computer Sciences',
+            'Information Sciences',
+            'Information Systems',
+            'Information Technology',
+            'Software Engineering',
+            'Statistics'
+        ],
+        'College of Agriculture & Environmental Sciences': [
+            'Agribusiness & Value Chain Management',
+            'Agricultural Economics',
+            'Animal Science',
+            'Range Ecology & Biodiversity',
+            'Natural Resource Management',
+            'Environmental Sciences',
+            'Rural Development & Agricultural Extension (Regular)',
+            'Rural Development & Agricultural Extension (Mid-career)',
+            'Horticultural Crop Production & Processing',
+            'Sugarcane Agronomy',
+            'Plant Science'
+        ],
+        'College of Health & Medical Sciences': [
+            'Environmental Health Science',
+            'Medical Laboratory Sciences',
+            'Medicine',
+            'Pharmacy (Clinical)',
+            'Public Health',
+            'Nursing (Neonatal Nursing, Emergency & Critical Care Nursing)',
+            'Midwifery (Advance Standing Midwifery)',
+            'Midwifery (Regular)',
+            'Psychiatric Nursing',
+            'Surgical Nursing',
+            'Pediatric Nursing'
+        ],
+        'College of Social Sciences & Humanities': [
+            'English Language and Literature',
+            'French Language and Literature',
+            'Journalism and Mass Communication',
+            'Geo-Information Sciences',
+            'Geography and Environmental Studies',
+            'Urban Planning',
+            'Gender and Development',
+            'History & Heritage Management',
+            'Sociology',
+            'Afaan Oromo and Literature',
+            'Tourism Development & Hotel Management'
+        ],
+        'College of Law': [
+            'Law (LLB)'
+        ],
+        'College of Veterinary Medicine': [
+            'Veterinary Medicine (DVM)',
+            'Veterinary Laboratory Technology'
+        ],
+        'College of Natural & Computational Sciences': [
+            'Biology',
+            'Molecular Biology & Biotechnology (New)',
+            'Chemistry',
+            'Mathematics',
+            'Physics'
+        ],
+        'Sport Science Academy': [
+            'Sport Sciences'
+        ],
+        'Haramaya Institute of Technology': [
+            'Agricultural Engineering',
+            'Water Resources & Irrigation Engineering',
+            'Water Supply & Environmental Engineering',
+            'Hydraulics and Water Resource Engineering',
+            'Food Science and Post-Harvest Technology',
+            'Food Technology and Process Engineering',
+            'Chemical Engineering',
+            'Civil Engineering',
+            'Electrical and Computer Engineering',
+            'Mechanical Engineering'
+        ],
+        'College of Education & Behavioral Science': [
+            'Adult Education & Community Development',
+            'Educational Planning & Management',
+            'Psychology',
+            'Special Needs & Inclusive Education'
+        ],
+        'College of Agro Industry & Land Resources': [
+            'Land Administration',
+            'Dairy & Meat Technology',
+            'Forest Resource Management',
+            'Soil Resources & Watershed Management'
+        ]
+    };
+
+    // DOM Elements
+    const zoneSelect = document.getElementById('zone');
+    const woredaSelect = document.getElementById('woreda');
+    const collegeSelect = document.getElementById('college');
+    const departmentSelect = document.getElementById('department');
+    const password1 = document.getElementById('password1');
+    const password2 = document.getElementById('password2');
+    const submitButton = document.querySelector('button[type="submit"]');
+    const form = document.querySelector('form');
+
+    // Dynamic Woreda loading based on Zone selection
+    if (zoneSelect && woredaSelect) {
+        zoneSelect.addEventListener('change', function() {
+            const selectedZone = this.value;
+            woredaSelect.innerHTML = '<option value="">Select Woreda</option>';
+            
+            if (selectedZone && woredaData[selectedZone]) {
+                woredaData[selectedZone].forEach(woreda => {
+                    const option = document.createElement('option');
+                    option.value = woreda;
+                    option.textContent = woreda;
+                    // Preselect if this was the previously selected value
+                    if (woreda === '{{ request.POST.woreda }}') {
+                        option.selected = true;
+                    }
+                    woredaSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Trigger change on page load if zone is already selected
+        if (zoneSelect.value) {
+            zoneSelect.dispatchEvent(new Event('change'));
+        }
+    }
+
+    // Dynamic Department loading based on College selection
+    if (collegeSelect && departmentSelect) {
+        collegeSelect.addEventListener('change', function() {
+            const selectedCollege = this.value;
+            departmentSelect.innerHTML = '<option value="">Select Department</option>';
+            
+            if (selectedCollege && collegeDepartments[selectedCollege]) {
+                collegeDepartments[selectedCollege].forEach(department => {
+                    const option = document.createElement('option');
+                    option.value = department;
+                    option.textContent = department;
+                    // Preselect if this was the previously selected value
+                    if (department === '{{ request.POST.department }}') {
+                        option.selected = true;
+                    }
+                    departmentSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Trigger change on page load if college is already selected
+        if (collegeSelect.value) {
+            collegeSelect.dispatchEvent(new Event('change'));
+        }
+    }
+
+    // Real-time password validation
+    function validatePasswords() {
+        const password1Value = password1.value;
+        const password2Value = password2.value;
+        let isValid = true;
+        
+        // Validate password length
+        if (password1Value.length < 6) {
+            password1.classList.add('border-red-500', 'bg-red-50');
+            isValid = false;
+        } else {
+            password1.classList.remove('border-red-500', 'bg-red-50');
+        }
+        
+        // Validate password match
+        if (password2Value && password1Value !== password2Value) {
+            password2.classList.add('border-red-500', 'bg-red-50');
+            isValid = false;
+        } else {
+            password2.classList.remove('border-red-500', 'bg-red-50');
+        }
+        
+        // Update submit button state
+        if (submitButton) {
+            submitButton.disabled = !isValid;
+        }
+        
+        return isValid;
+    }
+    
+    if (password1 && password2) {
+        password1.addEventListener('input', validatePasswords);
+        password2.addEventListener('input', validatePasswords);
+        
+        // Initial validation
+        validatePasswords();
+    }
+
+    // Form validation on submit
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!validatePasswords()) {
+                e.preventDefault();
+                alert('Please fix the validation errors before submitting.');
+                return false;
+            }
+        });
+    }
+
+    // Mobile responsiveness: Adjust layout for very small screens
+    function handleResize() {
+        if (window.innerWidth < 640) {
+            document.body.classList.add('mobile-view');
+        } else {
+            document.body.classList.remove('mobile-view');
+        }
+    }
+
+    // Initial check and event listener
+    handleResize();
+    window.addEventListener('resize', handleResize);
+});
+</script>
+
+<style>
+/* Additional mobile responsiveness */
+@media (max-width: 640px) {
+    .mobile-view .grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .mobile-view .space-y-6 > * + * {
+        margin-top: 1rem;
+    }
+}
+
+/* Improved focus states for better accessibility */
+select:focus, input:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Smooth transitions for better UX */
+select, input, button {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+</style>
+{% endblock %}

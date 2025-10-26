@@ -1,0 +1,83 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>Student Geographical Distribution Report</h1>
+
+<div class="module">
+    <h2>Summary</h2>
+    <p><strong>Total Active Students:</strong> {{ total_students }}</p>
+</div>
+
+<div class="module">
+    <h2>Distribution by Zone</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Zone</th>
+                <th>Student Count</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in zone_stats %}
+            <tr>
+                <td>{{ stat.zone }}</td>
+                <td>{{ stat.count }}</td>
+                <td>{{ stat.count|floatformat:2 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="module">
+    <h2>Distribution by Woreda</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Woreda</th>
+                <th>Zone</th>
+                <th>Student Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in woreda_stats %}
+            <tr>
+                <td>{{ stat.woreda }}</td>
+                <td>{{ stat.zone }}</td>
+                <td>{{ stat.count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="module">
+    <h2>Distribution by Kebele</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Kebele</th>
+                <th>Woreda</th>
+                <th>Zone</th>
+                <th>Student Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in kebele_stats %}
+            <tr>
+                <td>{{ stat.kebele }}</td>
+                <td>{{ stat.woreda }}</td>
+                <td>{{ stat.zone }}</td>
+                <td>{{ stat.count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url 'admin:export_students_csv' %}" class="button">Export to CSV</a>
+<a href="{% url 'admin:index' %}" class="button">Back to Admin</a>
+
+{% endblock %}

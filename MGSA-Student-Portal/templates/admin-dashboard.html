@@ -1,0 +1,484 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="px-4 py-6 sm:px-0">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                        <p class="mt-1 text-sm text-gray-500">Manage users, content, and system settings</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <a href="/admin/" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-cog mr-2"></i>
+                            Django Admin
+                        </a>
+                        <button onclick="refreshStats()" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                        <i class="fas fa-users text-white"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
+                            <dd class="text-lg font-medium text-gray-900" id="totalUsers">{{ total_users|default:0 }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                        <i class="fas fa-user-graduate text-white"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Students</dt>
+                            <dd class="text-lg font-medium text-gray-900" id="totalStudents">{{ total_students|default:0 }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                        <i class="fas fa-book text-white"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Active Tutorials</dt>
+                            <dd class="text-lg font-medium text-gray-900" id="activeTutorials">{{ total_tutorials|default:0 }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                        <i class="fas fa-chart-line text-white"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Posts</dt>
+                            <dd class="text-lg font-medium text-gray-900" id="totalPosts">{{ total_posts|default:0 }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-red-500 rounded-md p-3">
+                        <i class="fas fa-download text-white"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Resources</dt>
+                            <dd class="text-lg font-medium text-gray-900" id="totalResources">{{ total_resources|default:0 }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                        <i class="fas fa-clipboard-list text-white"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Registrations</dt>
+                            <dd class="text-lg font-medium text-gray-900" id="totalRegistrations">{{ total_registrations|default:0 }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <!-- User Management Card -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">User Management</h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <a href="/admin/accounts/user/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Manage All Users</h4>
+                                <p class="text-sm text-gray-500">View and manage all system users in Django Admin</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="/admin/students/student/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Manage Students</h4>
+                                <p class="text-sm text-gray-500">View and manage student profiles</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+
+                    <a href="/admin/executive/executive/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Manage Executives</h4>
+                                <p class="text-sm text-gray-500">View and manage executive members</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Management Card -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Content Management</h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <a href="/admin/posts/post/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Manage Posts</h4>
+                                <p class="text-sm text-gray-500">Create, edit, and manage blog posts</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="/admin/tutorials/tutorial/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Manage Tutorials</h4>
+                                <p class="text-sm text-gray-500">Create and manage tutorial sessions</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+
+                    <a href="/admin/resources/resource/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Manage Resources</h4>
+                                <p class="text-sm text-gray-500">Upload and manage learning resources</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Management -->
+    <div class="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <!-- Analytics & Reports -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Analytics & Reports</h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <a href="/admin/analytics/feedback/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Feedback & Reviews</h4>
+                                <p class="text-sm text-gray-500">View user feedback and reviews</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="/admin/analytics/useractivity/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">User Activity</h4>
+                                <p class="text-sm text-gray-500">Monitor user activities and engagement</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+
+                    <button onclick="exportUserData()" class="w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Export Data</h4>
+                                <p class="text-sm text-gray-500">Export user and system data</p>
+                            </div>
+                            <i class="fas fa-download text-gray-400"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Settings -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">System Settings</h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <a href="/admin/accounts/college/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Manage Colleges</h4>
+                                <p class="text-sm text-gray-500">Add and manage colleges</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="/admin/accounts/department/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Manage Departments</h4>
+                                <p class="text-sm text-gray-500">Add and manage departments</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+
+                    <a href="/admin/auth/group/" class="block w-full text-left px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">User Groups & Permissions</h4>
+                                <p class="text-sm text-gray-500">Manage user roles and permissions</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="mt-8">
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Recent Activity</h3>
+                    <button onclick="loadRecentActivity()" class="text-sm text-blue-600 hover:text-blue-500">
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div id="recentActivity" class="space-y-3">
+                    <div class="text-center py-8">
+                        <i class="fas fa-spinner fa-spin text-gray-400 text-2xl mb-2"></i>
+                        <p class="text-gray-500">Loading recent activity...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Global variables
+let activityInterval;
+
+// Load recent activity
+function loadRecentActivity() {
+    const activityContainer = document.getElementById('recentActivity');
+    activityContainer.innerHTML = `
+        <div class="text-center py-4">
+            <i class="fas fa-spinner fa-spin text-gray-400"></i>
+            <p class="text-gray-500 mt-2">Loading activity...</p>
+        </div>
+    `;
+
+    // Simulate API call - replace with actual API endpoint
+    setTimeout(() => {
+        const activities = [
+            {
+                type: 'user',
+                message: 'New user registered: john.doe@example.com',
+                time: '2 minutes ago',
+                icon: 'fas fa-user-plus',
+                color: 'text-green-500'
+            },
+            {
+                type: 'post',
+                message: 'New post created: "Welcome to MGSA Portal"',
+                time: '5 minutes ago',
+                icon: 'fas fa-file-alt',
+                color: 'text-blue-500'
+            },
+            {
+                type: 'tutorial',
+                message: 'Tutorial registration: Python Basics',
+                time: '10 minutes ago',
+                icon: 'fas fa-chalkboard-teacher',
+                color: 'text-purple-500'
+            },
+            {
+                type: 'resource',
+                message: 'New resource uploaded: Study Guide PDF',
+                time: '15 minutes ago',
+                icon: 'fas fa-download',
+                color: 'text-orange-500'
+            }
+        ];
+
+        let activityHTML = '';
+        activities.forEach(activity => {
+            activityHTML += `
+                <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <i class="${activity.icon} ${activity.color} mt-1"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">${activity.message}</p>
+                        <p class="text-sm text-gray-500">${activity.time}</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        activityContainer.innerHTML = activityHTML;
+    }, 1000);
+}
+
+// Refresh dashboard stats
+function refreshStats() {
+    const refreshBtn = event.target;
+    const originalText = refreshBtn.innerHTML;
+    
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Refreshing...';
+    
+    // Simulate API call - replace with actual API endpoint
+    setTimeout(() => {
+        // In a real implementation, you would fetch fresh data from the server
+        // For now, we'll just reload the page
+        window.location.reload();
+    }, 1500);
+}
+
+// Export user data
+function exportUserData() {
+    if (confirm('Do you want to export user data as Excel?')) {
+        // Show loading state
+        const exportBtn = event.target.closest('button');
+        const originalText = exportBtn.innerHTML;
+        exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Exporting...';
+        exportBtn.disabled = true;
+        
+        // Simulate export process
+        setTimeout(() => {
+            // In a real implementation, this would call your export API
+            // window.location.href = '/api/admin/export-users-excel/';
+            
+            alert('Export completed! Data has been downloaded.');
+            exportBtn.innerHTML = originalText;
+            exportBtn.disabled = false;
+        }, 2000);
+    }
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    // Load recent activity on page load
+    loadRecentActivity();
+    
+    // Set up auto-refresh for activity (every 30 seconds)
+    activityInterval = setInterval(loadRecentActivity, 30000);
+    
+    // Add smooth animations
+    const stats = document.querySelectorAll('[id$="Users"], [id$="Students"], [id$="Tutorials"], [id$="Posts"], [id$="Resources"], [id$="Registrations"]');
+    stats.forEach(stat => {
+        const originalValue = parseInt(stat.textContent);
+        if (originalValue > 0) {
+            let current = 0;
+            const increment = originalValue / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= originalValue) {
+                    stat.textContent = originalValue;
+                    clearInterval(timer);
+                } else {
+                    stat.textContent = Math.floor(current);
+                }
+            }, 20);
+        }
+    });
+});
+
+// Clean up on page unload
+window.addEventListener('beforeunload', function() {
+    if (activityInterval) {
+        clearInterval(activityInterval);
+    }
+});
+</script>
+
+<style>
+/* Additional styles for better UX */
+.bg-white {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
