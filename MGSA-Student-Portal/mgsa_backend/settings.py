@@ -16,7 +16,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 # Company deployment hosts - Using your Render domain
 ALLOWED_HOSTS = [
-    'mgsa-student-portal.onrender.com',
+    #'mgsa-student-portal.onrender.com',
     'zestful-optimism-mgsa-student-portal.up.railway.app',
     'localhost',
     '127.0.0.1',
@@ -138,7 +138,8 @@ if not DEBUG:
 
 # CSRF trusted origins for your Render domain
 CSRF_TRUSTED_ORIGINS = [
-    'https://mgsa-student-portal.onrender.com',
+    #'https://mgsa-student-portal.onrender.com',
+    "https://zestful-optimism-mgsa-student-portal.up.railway.app",
 ]
 
 # ==================== API & REST FRAMEWORK ====================
