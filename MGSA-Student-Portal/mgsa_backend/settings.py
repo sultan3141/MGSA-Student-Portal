@@ -17,7 +17,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # Company deployment hosts - Using your Render domain
 ALLOWED_HOSTS = [
     'mgsa-student-portal.onrender.com',
-    'zestful-optimism-mgsa-student-portal.up.railway.app'
+    'zestful-optimism-mgsa-student-portal.up.railway.app',
     'localhost',
     '127.0.0.1',
 ]
