@@ -321,6 +321,7 @@ DATABASES = {
     }
 }
 
+
 # ==================== SECURITY CONFIGURATION ====================
 
 # Password validation for company security standards

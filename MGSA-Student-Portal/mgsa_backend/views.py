@@ -1330,109 +1330,24 @@ def api_delete_tutorial(request, tutorial_id):
     except Tutorial.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Tutorial not found'})
 
+
 def register_page(request):
     """Registration page"""
-    if request.user.is_authenticated:
-        return redirect('student-dashboard')
-    
-    if request.method == 'POST':
-        try:
-            email = request.POST.get('email')
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
-            password1 = request.POST.get('password1')
-            password2 = request.POST.get('password2')
-            zone = request.POST.get('zone')
-            woreda = request.POST.get('woreda')
-            college = request.POST.get('college')
-            department = request.POST.get('department')
-            gender = request.POST.get('gender')
-            year_of_study = request.POST.get('year_of_study')
-            
-            # Validation
-            if not all([email, first_name, last_name, password1, password2]):
-                messages.error(request, 'All required fields must be filled')
-                return render(request, 'register.html', {
-                    'zones': ['West Hararghe', 'East Hararghe'],
-                    'colleges': list(collegeDepartments.keys()),
-                    'west_hararghe_woredas': west_hararghe_woredas,
-                    'east_hararghe_woredas': east_hararghe_woredas,
-                    'college_departments': collegeDepartments,
-                })
-            
-            if password1 != password2:
-                messages.error(request, 'Passwords do not match')
-                return render(request, 'register.html', {
-                    'zones': ['West Hararghe', 'East Hararghe'],
-                    'colleges': list(collegeDepartments.keys()),
-                    'west_hararghe_woredas': west_hararghe_woredas,
-                    'east_hararghe_woredas': east_hararghe_woredas,
-                    'college_departments': collegeDepartments,
-                })
-            
-            if len(password1) < 6:
-                messages.error(request, 'Password must be at least 6 characters long')
-                return render(request, 'register.html', {
-                    'zones': ['West Hararghe', 'East Hararghe'],
-                    'colleges': list(collegeDepartments.keys()),
-                    'west_hararghe_woredas': west_hararghe_woredas,
-                    'east_hararghe_woredas': east_hararghe_woredas,
-                    'college_departments': collegeDepartments,
-                })
-            
-            if User.objects.filter(email=email).exists():
-                messages.error(request, 'Email already exists')
-                return render(request, 'register.html', {
-                    'zones': ['West Hararghe', 'East Hararghe'],
-                    'colleges': list(collegeDepartments.keys()),
-                    'west_hararghe_woredas': west_hararghe_woredas,
-                    'east_hararghe_woredas': east_hararghe_woredas,
-                    'college_departments': collegeDepartments,
-                })
-            
-            # Create user
-            user = User.objects.create_user(
-                email=email,
-                password=password1,
-                first_name=first_name,
-                last_name=last_name,
-                role='student',
-                zone=zone,
-                woreda=woreda,
-                college=college,
-                department=department,
-                gender=gender,
-                year_of_study=year_of_study
-            )
-            
-            # Log the user in
-            login(request, user)
-            messages.success(request, 'Registration successful! Welcome to MGSA Portal.')
-            return redirect('student-dashboard')
-            
-        except Exception as e:
-            messages.error(request, f'Registration failed: {str(e)}')
-            return render(request, 'register.html', {
-                'zones': ['West Hararghe', 'East Hararghe'],
-                'colleges': list(collegeDepartments.keys()),
-                'west_hararghe_woredas': west_hararghe_woredas,
-                'east_hararghe_woredas': east_hararghe_woredas,
-                'college_departments': collegeDepartments,
-            })
-    
-    # Woredas by zone
+
+    # ✅ Define these FIRST so they’re available everywhere
     west_hararghe_woredas = [
         'Mieso', 'Doba', 'Tulo', 'Mesela', 'Chiro', 'Anchar', 'Guba Koricha', 
         'Habro', 'Daro Lebu', 'Boke', 'Kuni', 'Gemches', 'Chiro Zuria', 'Bedesa'
     ]
-    
+
     east_hararghe_woredas = [
         'Kombolcha', 'Jarso', 'Gursum', 'Babile', 'Fedis', 'Haro Maya', 
         'Kurfa Chele', 'Kersa', 'Meta', 'Goro Gutu', 'Deder', 'Melka Belo', 
         'Bedeno', 'Midga Tola', 'Chinaksan', 'Girawa', 'Gola Oda', 'Meyu'
     ]
-    
+
     collegeDepartments = {
+        'Freshman Directorate': ['Freshman'],
         'College of Business & Economics': [
             'Accounting and Finance',
             'Cooperatives (Cooperative Business Management & Cooperative Accounting and Auditing)',
@@ -1448,14 +1363,76 @@ def register_page(request):
             'Software Engineering',
             'Statistics'
         ],
-        # ... include all your colleges from the template
+        # ... other colleges
     }
-    
-    context = {
+
+    if request.user.is_authenticated:
+        return redirect('student-dashboard')
+
+    # ✅ Define context once so you can reuse it everywhere
+    base_context = {
         'zones': ['West Hararghe', 'East Hararghe'],
         'colleges': list(collegeDepartments.keys()),
         'west_hararghe_woredas': west_hararghe_woredas,
         'east_hararghe_woredas': east_hararghe_woredas,
         'college_departments': collegeDepartments,
     }
-    return render(request, 'register.html', context)
+
+    if request.method == 'POST':
+        try:
+            email = request.POST.get('email')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            password1 = request.POST.get('password1')
+            password2 = request.POST.get('password2')
+            zone = request.POST.get('zone')
+            woreda = request.POST.get('woreda')
+            college = request.POST.get('college')
+            department = request.POST.get('department')
+            gender = request.POST.get('gender')
+            year_of_study = request.POST.get('year_of_study')
+
+            # Validation
+            if not all([email, first_name, last_name, password1, password2]):
+                messages.error(request, 'All required fields must be filled')
+                return render(request, 'register.html', base_context)
+
+            if password1 != password2:
+                messages.error(request, 'Passwords do not match')
+                return render(request, 'register.html', base_context)
+
+            if len(password1) < 6:
+                messages.error(request, 'Password must be at least 6 characters long')
+                return render(request, 'register.html', base_context)
+
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'Email already exists')
+                return render(request, 'register.html', base_context)
+
+            # Create user
+            user = User.objects.create_user(
+                email=email,
+                password=password1,
+                first_name=first_name,
+                last_name=last_name,
+                role='Student',
+                zone=zone,
+                woreda=woreda,
+                college=college,
+                department=department,
+                gender=gender,
+                year_of_study=year_of_study
+            )
+
+            # Log the user in
+            login(request, user)
+            messages.success(request, 'Registration successful! Welcome to MGSA Portal.')
+            return redirect('student-dashboard')
+
+        except Exception as e:
+            messages.error(request, f'Registration failed: {str(e)}')
+            return render(request, 'register.html', base_context)
+
+    # GET request (render registration page)
+    return render(request, 'register.html', base_context)
+

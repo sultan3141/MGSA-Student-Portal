@@ -103,6 +103,7 @@
                     <select id="college" name="college" required
                             class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
                         <option value="">Select College</option>
+                        <option value="Freshman Directorate" {% if request.POST.college == 'Freshman Directorate' %}selected{% endif %}>Freshman Directorate</option>
                         <option value="College of Business & Economics" {% if request.POST.college == 'College of Business & Economics' %}selected{% endif %}>College of Business & Economics</option>
                         <option value="College of Computing & Informatics" {% if request.POST.college == 'College of Computing & Informatics' %}selected{% endif %}>College of Computing & Informatics</option>
                         <option value="College of Agriculture & Environmental Sciences" {% if request.POST.college == 'College of Agriculture & Environmental Sciences' %}selected{% endif %}>College of Agriculture & Environmental Sciences</option>
@@ -223,6 +224,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // College to Department mapping
     const collegeDepartments = {
+        'Freshman Directorate': [
+            'Freshman'
+        ],
         'College of Business & Economics': [
             'Accounting and Finance',
             'Cooperatives (Cooperative Business Management & Cooperative Accounting and Auditing)',
