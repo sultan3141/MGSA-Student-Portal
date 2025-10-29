@@ -604,14 +604,14 @@ def student_dashboard(request):
     return render(request, 'student-dashboard.html', context)
 
 def update_profile(request):
-    user = request.user  # This is fine - different function
-    user.first_name = request.POST.get('first_name', '')
-    user.last_name = request.POST.get('last_name', '')
-    user.phone = request.POST.get('phone', '')
-    user.bio = request.POST.get('bio', '')
+    student = request.user  # This is fine - different function
+    student.first_name = request.POST.get('first_name', '')
+    student.last_name = request.POST.get('last_name', '')
+    student.phone = request.POST.get('phone', '')
+    student.bio = request.POST.get('bio', '')
     
     try:
-        user.save()
+        student.save()
         messages.success(request, 'Profile updated successfully!')
     except Exception as e:
         messages.error(request, f'Error updating profile: {str(e)}')
