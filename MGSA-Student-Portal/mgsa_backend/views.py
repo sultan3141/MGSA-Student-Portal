@@ -1153,14 +1153,14 @@ def submit_feedback(request):
 def update_profile(request):
     """Update user profile"""
     try:
-        user = request.user
-        user.first_name = request.POST.get('first_name', user.first_name)
-        user.last_name = request.POST.get('last_name', user.last_name)
-        user.phone = request.POST.get('phone', user.phone)
-        user.department = request.POST.get('department', user.department)
-        user.year_of_study = request.POST.get('year_of_study', user.year_of_study)
-        user.bio = request.POST.get('bio', user.bio)
-        user.save()
+        student = request.user
+        student.first_name = request.POST.get('first_name', student.first_name)
+        student.last_name = request.POST.get('last_name', student.last_name)
+        student.phone = request.POST.get('phone', student.phone)
+        student.department = request.POST.get('department', student.department)
+        student.year_of_study = request.POST.get('year_of_study', student.year_of_study)
+        student.bio = request.POST.get('bio', student.bio)
+        student.save()
         
         messages.success(request, 'Profile updated successfully')
     
