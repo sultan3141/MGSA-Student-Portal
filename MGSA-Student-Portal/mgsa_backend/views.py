@@ -1077,7 +1077,7 @@ def cancel_tutorial_registration(request, registration_id):
     try:
         registration = TutorialRegistration.objects.get(
             id=registration_id,
-            user=request.user,
+            student=request.user,
             status='registered'
         )
         registration.status = 'cancelled'
